@@ -4,20 +4,28 @@
 
 זהו פרויקט מיוחד שנוצר עבור עידן וחבריו ללמידת אנגלית ופיתוח תוכנה באמצעות AI. הפרויקט מאפשר לילדים ללמוד תכנות תוך כדי יצירה ושיפור של משחק לימוד אנגלית.
 
-## 🚀 התחלה מהירה - 3 שלבים פשוטים
+## 🚀 התחלה מהירה - 3 אפשרויות לבחירה
 
-### שלב 1: התקנה אוטומטית
+### אפשרות 1: 🌐 באינטרנט (הכי קל! מומלץ לרוב)
+**עובד בכל מקום בלי להתקין כלום**
+- קראו: `PARENTS_REPLIT_GUIDE.md`
+- 10 דקות להעלאה ל-Replit
+- לינק קבוע שתמיד עובד
+- הילדים יכולים לערוך באתר
+
+### אפשרות 2: 💻 במחשב עם AI (לפיתוח מתקדם)
+**התקנה מקומית עם כל הכלים**
 ```powershell
 # ב-Windows PowerShell (כמנהל):
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\setup_dev_environment.ps1
 ```
 
-### שלב 2: פתיחת הפרויקט
-הסקריפט יפתח VS Code אוטומטית, או שתוכלו להפעיל:
-```bash
-code .
-```
+### אפשרות 3: 📥 הורדה והרצה מקומית (בסיסית)
+**הורידו ופתחו ישירות**
+- הורידו מ-GitHub
+- הריצו `python EnglishGame.py`
+- עובד אבל ללא כלי פיתוח
 
 ### שלב 3: הפעלת המשחק
 - לחצו **F5** ב-VS Code
