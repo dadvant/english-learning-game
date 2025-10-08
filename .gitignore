@@ -1,0 +1,38 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Personal files that should not be shared
+players_data.json
+*.pdf
+*.pptx
+*.stl
+*.FCStd
+*.docx
+*.pptm
+
+# Game data (each player should have their own)
+/players_data.json
+
+# Keep templates and static files
+!templates/
+!static/

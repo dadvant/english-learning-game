@@ -1,0 +1,2886 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק לימוד אנגלית - עידן</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            direction: rtl;
+            overflow-x: hidden;
+        }
+
+        /* אנימציות דואולינגו */
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translateY(-20px);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.05) translateY(0);
+            }
+            80% {
+                opacity: 1;
+                transform: scale(0.95) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes correctAnswer {
+            0% {
+                background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
+                transform: scale(1);
+            }
+            50% {
+                background: linear-gradient(145deg, #c8e6c9 0%, #4CAF50 100%);
+                transform: scale(1.1);
+            }
+            100% {
+                background: linear-gradient(145deg, #c8e6c9 0%, #4CAF50 100%);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes wrongAnswer {
+            0% {
+                background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
+                transform: translateX(0);
+            }
+            25% {
+                background: linear-gradient(145deg, #ffcdd2 0%, #f44336 100%);
+                transform: translateX(-10px);
+            }
+            75% {
+                background: linear-gradient(145deg, #ffcdd2 0%, #f44336 100%);
+                transform: translateX(10px);
+            }
+            100% {
+                background: linear-gradient(145deg, #ffcdd2 0%, #f44336 100%);
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes levelComplete {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes starBurst {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2) rotate(360deg);
+            }
+        }
+
+        /* כלאס לאנימציות */
+        .animate-bounce-in {
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .animate-slide-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .animate-slide-left {
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .animate-pulse {
+            animation: pulse 1s infinite;
+        }
+
+        .animate-correct {
+            animation: correctAnswer 0.8s ease-out;
+        }
+
+        .animate-wrong {
+            animation: wrongAnswer 0.6s ease-out;
+        }
+
+        .animate-level-complete {
+            animation: levelComplete 1s ease-out;
+        }
+
+        .animate-star-burst {
+            animation: starBurst 2s ease-out;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* כפתור החלף משתמש קבוע */
+        .switch-user-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(145deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(255, 107, 107, 0.3);
+            z-index: 1000;
+            display: none;
+        }
+
+        .switch-user-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .switch-user-btn.show {
+            display: block;
+        }
+
+        /* מסך בחירת שחקן */
+        .player-selection {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 4px solid #4CAF50;
+        }
+
+        .player-selection h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .players-list {
+            margin: 30px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .player-card {
+            background: linear-gradient(145deg, #f1f3f4 0%, #e8eaf6 100%);
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: #4CAF50;
+        }
+
+        .player-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .player-stats {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .create-player-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 15px;
+            border: 2px dashed #4CAF50;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        /* מסך בחירת רמות */
+        .level-selection {
+            display: none;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 4px solid #FF9800;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .category-card {
+            background: linear-gradient(145deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border-color: #FF9800;
+        }
+
+        .category-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .level-card {
+            background: linear-gradient(145deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .level-card:hover::before {
+            opacity: 1;
+        }
+
+        .level-card.locked {
+            background: linear-gradient(145deg, #f5f5f5 0%, #e0e0e0 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+            filter: grayscale(70%);
+        }
+
+        .level-card.completed {
+            background: linear-gradient(145deg, #fff9c4 0%, #fff176 100%);
+            border-color: #FFC107;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+        }
+
+        .level-card.completed::after {
+            content: '⭐';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            animation: pulse 2s infinite;
+        }
+
+        .level-card:not(.locked):hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            border-color: #4CAF50;
+        }
+
+        .level-card.current {
+            border-color: #2196F3;
+            background: linear-gradient(145deg, #e3f2fd 0%, #bbdefb 100%);
+            animation: pulse 2s infinite;
+        }
+
+        .level-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .level-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .level-progress {
+            font-size: 0.9em;
+            color: #666;
+            opacity: 0.8;
+        }
+
+        /* מסך המשחק */
+        .game-screen {
+            display: none;
+            background: linear-gradient(145deg, #fce4ec 0%, #f8bbd9 100%);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 5px solid #4CAF50;
+            text-align: center;
+            position: relative;
+        }
+
+        .game-header {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border: 3px solid #FF9800;
+        }
+
+        .word-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 20px;
+            margin: 20px auto;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border: 4px solid #4CAF50;
+        }
+
+        .hebrew-word {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .answer-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
+            border: 4px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .answer-card:hover::before {
+            left: 100%;
+        }
+
+        .answer-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            border-color: #4CAF50;
+        }
+
+        .answer-card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .answer-card.correct {
+            background: linear-gradient(145deg, #c8e6c9 0%, #4CAF50 100%);
+            border-color: #2E7D32;
+            color: white;
+            animation: correctAnswer 0.8s ease-out;
+        }
+
+        .answer-card.wrong {
+            background: linear-gradient(145deg, #ffcdd2 0%, #f44336 100%);
+            border-color: #C62828;
+            color: white;
+            animation: wrongAnswer 0.6s ease-out;
+        }
+
+        /* מסך בחירת רמות */
+        .level-selection {
+            display: none;
+            background: linear-gradient(145deg, #fff3e0 0%, #ffcc02 100%);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 5px solid #4CAF50;
+            text-align: center;
+        }
+
+        .answer-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border-color: #4CAF50;
+            background: linear-gradient(145deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+
+        .answer-card.correct {
+            background: linear-gradient(145deg, #c8e6c9 0%, #4CAF50 100%);
+            border-color: #2E7D32;
+            color: white;
+            animation: correctPulse 0.6s ease;
+        }
+
+        .answer-card.wrong {
+            background: linear-gradient(145deg, #ffcdd2 0%, #f44336 100%);
+            border-color: #c62828;
+            color: white;
+            animation: wrongShake 0.6s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .result-screen {
+            display: none;
+            background: linear-gradient(145deg, #fff9c4 0%, #fff176 100%);
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 5px solid #FFC107;
+        }
+
+        .result-emoji {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #f44336;
+            color: white;
+            border-color: #c62828;
+        }
+
+        /* הודעות */
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        /* רספונסיבי */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .player-selection,
+            .level-selection,
+            .game-screen,
+            .result-screen {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .hebrew-word {
+                font-size: 2em;
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .answers-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* עמוד טעינה */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- כפתור החלף משתמש קבוע -->
+    <button id="switchUserBtn" class="switch-user-btn" onclick="goToPlayerSelection()">
+        👤 החלף משתמש
+    </button>
+
+    <div class="container">
+        <!-- מסך בחירת שחקן -->
+        <div id="playerSelection" class="player-selection">
+            <h1>🎮 ברוכים הבאים למשחק אנגלית! 🎮</h1>
+            <p style="font-size: 1.2em; color: #666; margin-bottom: 30px;">בחרו שחקן או צרו שחקן חדש</p>
+            
+            <div class="players-list" id="playersList">
+                <!-- רשימת השחקנים תיטען כאן -->
+            </div>
+            
+            <div class="create-player-section">
+                <h3>🌟 יצירת שחקן חדש 🌟</h3>
+                <div class="input-group">
+                    <input type="text" id="newPlayerName" placeholder="הזינו שם השחקן החדש..." maxlength="20">
+                    <button class="btn btn-primary" onclick="createNewPlayer()">יצירת שחקן</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך בחירת רמות -->
+        <div id="levelSelection" class="level-selection">
+            <button class="back-btn" onclick="goToPlayerSelection()">🏠</button>
+            <div class="game-header">
+                <h2 id="playerGreeting">שלום, שחקן!</h2>
+                <p id="playerStats">ציון כולל: 0 | משחקים: 0</p>
+            </div>
+            
+            <h2 style="text-align: center; color: #FF9800; margin-bottom: 20px;">בחרו קטגוריה ורמה</h2>
+            
+            <!-- כפתורי הסברים ותרגום -->
+            <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button onclick="showTranslatorHebEng()" class="btn btn-translator" style="background: linear-gradient(145deg, #4CAF50 0%, #45a049 100%); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; box-shadow: 0 8px 15px rgba(76, 175, 80, 0.3);">
+                    🇮🇱➡️🇺🇸 עברית לאנגלית
+                </button>
+                <button onclick="showExplanations()" class="btn btn-info" style="background: linear-gradient(145deg, #2196F3 0%, #1976D2 100%); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; box-shadow: 0 8px 15px rgba(33, 150, 243, 0.3);">
+                    📖 הסברי דקדוק
+                </button>
+                <button onclick="showTranslatorEngHeb()" class="btn btn-translator" style="background: linear-gradient(145deg, #FF9800 0%, #F57C00 100%); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; box-shadow: 0 8px 15px rgba(255, 152, 0, 0.3);">
+                    🇺🇸➡️🇮🇱 אנגלית לעברית
+                </button>
+            </div>
+            
+            <div class="categories-grid">
+                <!-- קטגוריות מילים -->
+                <div class="category-card" onclick="selectCategory('animals')">
+                    <div class="category-icon">🐾</div>
+                    <h3>חיות</h3>
+                    <p>12 מילים, 10 רמות</p>
+                </div>
+                <div class="category-card" onclick="selectCategory('colors')">
+                    <div class="category-icon">🎨</div>
+                    <h3>צבעים</h3>
+                    <p>12 מילים, 10 רמות</p>
+                </div>
+                <div class="category-card" onclick="selectCategory('food')">
+                    <div class="category-icon">🍕</div>
+                    <h3>אוכל</h3>
+                    <p>12 מילים, 10 רמות</p>
+                </div>
+                <div class="category-card" onclick="selectCategory('family')">
+                    <div class="category-icon">👨‍👩‍👧‍👦</div>
+                    <h3>משפחה</h3>
+                    <p>12 מילים, 10 רמות</p>
+                </div>
+                <div class="category-card" onclick="selectCategory('verbs')">
+                    <div class="category-icon">🏃‍♂️</div>
+                    <h3>פעלים</h3>
+                    <p>12 פעלים, 10 רמות</p>
+                </div>
+                
+                <!-- קטגוריות דקדוק -->
+                <div class="category-card" style="border: 3px solid #FF6B6B;" onclick="selectCategory('present_simple')">
+                    <div class="category-icon">📝</div>
+                    <h3>הווה פשוט</h3>
+                    <p>דקדוק, 10 רמות</p>
+                </div>
+                <div class="category-card" style="border: 3px solid #FF6B6B;" onclick="selectCategory('present_progressive')">
+                    <div class="category-icon">⏰</div>
+                    <h3>הווה מתמשך</h3>
+                    <p>דקדוק, 10 רמות</p>
+                </div>
+                <div class="category-card" style="border: 3px solid #FF6B6B;" onclick="selectCategory('questions')">
+                    <div class="category-icon">❓</div>
+                    <h3>מילות שאלה</h3>
+                    <p>דקדוק, 10 רמות</p>
+                </div>
+            </div>
+            
+            <div id="levelsContainer" style="display: none;">
+                <h3 id="selectedCategoryTitle">רמות זמינות</h3>
+                <div class="levels-grid" id="levelsGrid">
+                    <!-- רמות יטענו כאן -->
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך המשחק -->
+        <div id="gameScreen" class="game-screen">
+            <button class="back-btn" onclick="exitGame()">❌</button>
+            
+            <div class="game-header">
+                <h2 id="gameTitle">משחק אנגלית</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+                <p id="gameProgress">שאלה 0 מתוך 0 | ציון: 0</p>
+            </div>
+            
+            <div class="question-card">
+                <img id="wordImage" class="word-image" src="" alt="תמונה">
+                <div id="hebrewWord" class="hebrew-word">טוען...</div>
+                <div class="answers-grid" id="answersGrid">
+                    <!-- תשובות יטענו כאן -->
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך תוצאות -->
+        <div id="resultScreen" class="result-screen">
+            <div class="result-emoji" id="resultEmoji">🎉</div>
+            <h2 id="resultTitle">כל הכבוד!</h2>
+            <div id="resultStats">
+                <p>ציון: <span id="finalScore">0</span></p>
+                <p>תשובות נכונות: <span id="correctAnswers">0</span></p>
+                <p>דרגת הצלחה: <span id="successRate">0%</span></p>
+            </div>
+            <div style="margin-top: 30px;">
+                <button class="btn btn-primary" onclick="goToLevelSelection()">בחירת רמה חדשה</button>
+            </div>
+        </div>
+
+        <!-- מסך הסברים -->
+        <div id="explanationsScreen" class="explanation-screen" style="display: none;">
+            <button class="back-btn" onclick="goToLevelSelection()">🏠</button>
+            
+            <div class="explanation-header">
+                <h2>📖 הסברי דקדוק אנגלית</h2>
+                <p>בחרו נושא ללמידה מעמיקה</p>
+            </div>
+            
+            <div class="explanations-grid" id="explanationsGrid">
+                <!-- הסברים יטענו כאן -->
+            </div>
+        </div>
+
+        <!-- מסך תרגום עברית לאנגלית -->
+        <div id="translatorHebEngScreen" class="translator-screen" style="display: none;">
+            <button class="back-btn" onclick="goToLevelSelection()">🏠</button>
+            
+            <div class="translator-header">
+                <h2>🇮🇱➡️🇺🇸 תרגום עברית לאנגלית</h2>
+                <p>הזינו מילה או משפט בעברית לקבלת תרגום לאנגלית</p>
+            </div>
+            
+            <div class="translator-content">
+                <div class="translator-input-section">
+                    <label for="hebInput">טקסט בעברית:</label>
+                    <textarea id="hebInput" placeholder="הזינו כאן טקסט בעברית..." rows="4"></textarea>
+                    <button onclick="translateHebToEng()" class="translate-btn">🔄 תרגם</button>
+                </div>
+                
+                <div class="translator-output-section">
+                    <label>תרגום לאנגלית:</label>
+                    <div id="engOutput" class="translation-output">התרגום יופיע כאן...</div>
+                </div>
+                
+                <div class="quick-translate">
+                    <h3>תרגום מהיר - מילים נפוצות:</h3>
+                    <div class="quick-words-grid">
+                        <button onclick="quickTranslate('שלום', 'hello')">שלום → Hello</button>
+                        <button onclick="quickTranslate('תודה', 'thank you')">תודה → Thank you</button>
+                        <button onclick="quickTranslate('בבקשה', 'please')">בבקשה → Please</button>
+                        <button onclick="quickTranslate('סליחה', 'excuse me')">סליחה → Excuse me</button>
+                        <button onclick="quickTranslate('כן', 'yes')">כן → Yes</button>
+                        <button onclick="quickTranslate('לא', 'no')">לא → No</button>
+                        <button onclick="quickTranslate('אופנים', 'bicycle')">אופנים → Bicycle</button>
+                        <button onclick="quickTranslate('בית ספר', 'school')">בית ספר → School</button>
+                        <button onclick="quickTranslate('מים', 'water')">מים → Water</button>
+                        <button onclick="quickTranslate('אוכל', 'food')">אוכל → Food</button>
+                        <button onclick="quickTranslate('משפחה', 'family')">משפחה → Family</button>
+                        <button onclick="quickTranslate('חבר', 'friend')">חבר → Friend</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך תרגום אנגלית לעברית -->
+        <div id="translatorEngHebScreen" class="translator-screen" style="display: none;">
+            <button class="back-btn" onclick="goToLevelSelection()">🏠</button>
+            
+            <div class="translator-header">
+                <h2>🇺🇸➡️🇮🇱 תרגום אנגלית לעברית</h2>
+                <p>הזינו מילה או משפט באנגלית לקבלת תרגום לעברית</p>
+            </div>
+            
+            <div class="translator-content">
+                <div class="translator-input-section">
+                    <label for="engInput">English Text:</label>
+                    <textarea id="engInput" placeholder="Enter English text here..." rows="4"></textarea>
+                    <button onclick="translateEngToHeb()" class="translate-btn">🔄 Translate</button>
+                </div>
+                
+                <div class="translator-output-section">
+                    <label>תרגום לעברית:</label>
+                    <div id="hebOutput" class="translation-output">התרגום יופיע כאן...</div>
+                </div>
+                
+                <div class="quick-translate">
+                    <h3>Quick Translation - Common Words:</h3>
+                    <div class="quick-words-grid">
+                        <button onclick="quickTranslateReverse('Hello', 'שלום')">Hello → שלום</button>
+                        <button onclick="quickTranslateReverse('Thank you', 'תודה')">Thank you → תודה</button>
+                        <button onclick="quickTranslateReverse('Please', 'בבקשה')">Please → בבקשה</button>
+                        <button onclick="quickTranslateReverse('Excuse me', 'סליחה')">Excuse me → סליחה</button>
+                        <button onclick="quickTranslateReverse('Yes', 'כן')">Yes → כן</button>
+                        <button onclick="quickTranslateReverse('No', 'לא')">No → לא</button>
+                        <button onclick="quickTranslateReverse('Bicycle', 'אופנים')">Bicycle → אופנים</button>
+                        <button onclick="quickTranslateReverse('School', 'בית ספר')">School → בית ספר</button>
+                        <button onclick="quickTranslateReverse('Water', 'מים')">Water → מים</button>
+                        <button onclick="quickTranslateReverse('Food', 'אוכל')">Food → אוכל</button>
+                        <button onclick="quickTranslateReverse('Family', 'משפחה')">Family → משפחה</button>
+                        <button onclick="quickTranslateReverse('Friend', 'חבר')">Friend → חבר</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- מסך הסבר ספציפי -->
+        <div id="explanationDetailScreen" class="explanation-detail-screen" style="display: none;">
+            <button class="back-btn" onclick="showExplanations()">🔙</button>
+            
+            <div class="explanation-content">
+                <h2 id="explanationTitle">כותרת ההסבר</h2>
+                <p id="explanationDescription">תיאור ההסבר</p>
+                
+                <div class="explanation-section">
+                    <h3>📝 מבנה המשפט</h3>
+                    <div id="explanationStructure" class="structure-box">
+                        מבנה המשפט יופיע כאן
+                    </div>
+                </div>
+                
+                <div class="explanation-section">
+                    <h3>💡 דוגמאות</h3>
+                    <div id="explanationExamples" class="examples-list">
+                        <!-- דוגמאות יופיעו כאן -->
+                    </div>
+                </div>
+                
+                <div class="explanation-section">
+                    <h3>📋 כללים</h3>
+                    <div id="explanationRules" class="rules-list">
+                        <!-- כללים יופיעו כאן -->
+                    </div>
+                </div>
+                
+                <div class="explanation-section">
+                    <h3>🔑 מילות מפתח</h3>
+                    <div id="explanationKeywords" class="keywords-list">
+                        <!-- מילות מפתח יופיעו כאן -->
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button onclick="goToLevelSelection()" class="btn btn-primary">חזרה למשחק</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- עמוד טעינה -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>טוען...</p>
+        </div>
+
+        <!-- הודעות -->
+        <div id="messageContainer"></div>
+    </div>
+
+    <style>
+        /* עיצוב מסך ההסברים */
+        .explanation-screen {
+            background: linear-gradient(145deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 5px solid #2196F3;
+            text-align: center;
+        }
+
+        .explanation-header h2 {
+            color: #1976D2;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+
+        .explanation-header p {
+            color: #424242;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .explanations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .explanation-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
+            border-radius: 20px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #ddd;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .explanation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            border-color: #2196F3;
+        }
+
+        .explanation-card h3 {
+            color: #1976D2;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .explanation-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* עיצוב מסך הסבר ספציפי */
+        .explanation-detail-screen {
+            background: linear-gradient(145deg, #f3e5f5 0%, #e1bee7 100%);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 5px solid #9C27B0;
+        }
+
+        .explanation-content h2 {
+            color: #7B1FA2;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+
+        .explanation-content > p {
+            color: #424242;
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .explanation-section {
+            margin: 25px 0;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .explanation-section h3 {
+            color: #7B1FA2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .structure-box {
+            background: #f5f5f5;
+            border: 2px solid #9C27B0;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+            color: #424242;
+        }
+
+        .examples-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .example-item {
+            background: #e8f5e8;
+            border-right: 4px solid #4CAF50;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rule-item {
+            background: #fff3e0;
+            border-right: 4px solid #FF9800;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .keyword-tag {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-weight: bold;
+            color: #1976D2;
+        }
+
+        /* עיצוב מסכי התרגום */
+        .translator-screen {
+            background: linear-gradient(145deg, #f1f8e9 0%, #c8e6c9 100%);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border: 5px solid #4CAF50;
+            text-align: center;
+        }
+
+        .translator-header h2 {
+            color: #2E7D32;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+
+        .translator-header p {
+            color: #424242;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .translator-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .translator-input-section {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: right;
+        }
+
+        .translator-input-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2E7D32;
+            font-size: 1.2em;
+        }
+
+        .translator-input-section textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            font-size: 1.1em;
+            resize: vertical;
+            font-family: inherit;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .translator-input-section textarea:focus {
+            outline: none;
+            border-color: #2E7D32;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .translate-btn {
+            background: linear-gradient(145deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .translate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .translator-output-section {
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: right;
+        }
+
+        .translator-output-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2E7D32;
+            font-size: 1.2em;
+        }
+
+        .translation-output {
+            background: #f5f5f5;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 1.3em;
+            min-height: 80px;
+            color: #2c3e50;
+            font-weight: 600;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .translation-output.hebrew {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .quick-translate {
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .quick-translate h3 {
+            color: #2E7D32;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .quick-words-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-words-grid button {
+            background: linear-gradient(145deg, #E8F5E8 0%, #C8E6C9 100%);
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        .quick-words-grid button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, #C8E6C9 0%, #A5D6A7 100%);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        /* רספונסיבי למסכי תרגום */
+        @media (max-width: 768px) {
+            .translator-screen {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .translator-header h2 {
+                font-size: 2em;
+            }
+            
+            .quick-words-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // משתנים גלובליים
+        let currentPlayer = null;
+        let currentCategory = null;
+        let currentLevel = null;
+        let gameData = null;
+        let playerProgress = null;
+
+        // האתחול יתבצע ב-DOMContentLoaded האחר שמטפל גם בתרגום
+
+        // פונקציות עזר
+        function showMessage(text, type = 'success') {
+            const container = document.getElementById('messageContainer');
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            container.appendChild(message);
+            
+            setTimeout(() => {
+                if (container.contains(message)) {
+                    container.removeChild(message);
+                }
+            }, 4000);
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showScreen(screenId) {
+            const screens = ['playerSelection', 'levelSelection', 'gameScreen', 'resultScreen', 'explanationsScreen', 'explanationDetailScreen', 'translatorHebEngScreen', 'translatorEngHebScreen'];
+            
+            // הסתרת כל המסכים עם אנימציה
+            screens.forEach(id => {
+                const element = document.getElementById(id);
+                if (element.style.display !== 'none') {
+                    element.style.transition = 'all 0.3s ease-out';
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // הצגת המסך הנבחר עם אנימציה
+            setTimeout(() => {
+                const targetScreen = document.getElementById(screenId);
+                targetScreen.style.display = 'block';
+                targetScreen.style.opacity = '0';
+                targetScreen.style.transform = 'translateY(20px)';
+                
+                // אנימציית כניסה
+                requestAnimationFrame(() => {
+                    targetScreen.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    targetScreen.style.opacity = '1';
+                    targetScreen.style.transform = 'translateY(0)';
+                });
+                
+                // הוספת קלאס אנימציה ספציפי לכל מסך
+                setTimeout(() => {
+                    if (screenId === 'gameScreen') {
+                        targetScreen.classList.add('animate-bounce-in');
+                    } else if (screenId === 'resultScreen') {
+                        targetScreen.classList.add('animate-level-complete');
+                        createConfetti();
+                    } else {
+                        targetScreen.classList.add('animate-fade-up');
+                    }
+                }, 100);
+            }, 300);
+            
+            // הצגת כפתור החלף משתמש בכל המסכים חוץ ממסך בחירת השחקן
+            const switchBtn = document.getElementById('switchUserBtn');
+            if (screenId === 'playerSelection') {
+                switchBtn.classList.remove('show');
+            } else {
+                switchBtn.classList.add('show');
+            }
+        }
+
+        // פונקציות ניהול שחקנים
+        async function loadPlayers() {
+            try {
+                showLoading();
+                const response = await fetch('/api/players');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayPlayers(data.players);
+                } else {
+                    showMessage('שגיאה בטעינת שחקנים', 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאת רשת בטעינת שחקנים', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayPlayers(players) {
+            const container = document.getElementById('playersList');
+            
+            if (players.length === 0) {
+                container.innerHTML = '<p style="color: #666; padding: 20px;">אין שחקנים רשומים. צרו שחקן חדש!</p>';
+                return;
+            }
+            
+            container.innerHTML = players.map(player => `
+                <div class="player-card" onclick="selectPlayer('${player.name}')">
+                    <div class="player-info">
+                        <h3>👤 ${player.name}</h3>
+                        <div class="player-stats">
+                            ציון כולל: ${player.total_score} | משחקים: ${player.games_played}
+                        </div>
+                    </div>
+                    <div style="font-size: 2em;">▶️</div>
+                </div>
+            `).join('');
+        }
+
+        async function createNewPlayer() {
+            const nameInput = document.getElementById('newPlayerName');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                showMessage('אנא הזינו שם השחקן', 'error');
+                return;
+            }
+            
+            try {
+                showLoading();
+                const response = await fetch('/api/create_player', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: name })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message);
+                    nameInput.value = '';
+                    loadPlayers();
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה ביצירת שחקן', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function selectPlayer(playerName) {
+            try {
+                showLoading();
+                const response = await fetch('/api/select_player', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: playerName })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentPlayer = data.player;
+                    loadPlayerProgress();
+                    goToLevelSelection();
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בבחירת שחקן', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadPlayerProgress() {
+            try {
+                const response = await fetch('/api/player_progress');
+                const data = await response.json();
+                
+                if (data.success) {
+                    playerProgress = data.progress;
+                    updatePlayerDisplay(data.player_info);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בטעינת התקדמות', 'error');
+            }
+        }
+
+        function updatePlayerDisplay(playerInfo) {
+            document.getElementById('playerGreeting').textContent = `שלום, ${playerInfo.name}! 👋`;
+            document.getElementById('playerStats').textContent = 
+                `ציון כולל: ${playerInfo.total_score} | משחקים: ${playerInfo.games_played}`;
+        }
+
+        // פונקציות המשחק
+        async function selectCategory(category) {
+            currentCategory = category;
+            
+            const categoryNames = {
+                'animals': 'חיות 🐾',
+                'colors': 'צבעים 🎨',
+                'food': 'אוכל 🍕',
+                'family': 'משפחה 👨‍👩‍👧‍👦'
+            };
+            
+            document.getElementById('selectedCategoryTitle').textContent = 
+                `רמות ${categoryNames[category]}`;
+            
+            await loadLevels(category);
+            document.getElementById('levelsContainer').style.display = 'block';
+        }
+
+        async function loadLevels(category) {
+            try {
+                const response = await fetch(`/api/get_levels/${category}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayLevels(data.levels);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בטעינת רמות', 'error');
+            }
+        }
+
+        function displayLevels(levels) {
+            const container = document.getElementById('levelsGrid');
+            container.innerHTML = '';
+            
+            levels.forEach((level, index) => {
+                setTimeout(() => {
+                    let className = 'level-card';
+                    let clickHandler = '';
+                    let statusIcon = '';
+                    
+                    if (!level.is_unlocked) {
+                        className += ' locked';
+                        statusIcon = '🔒';
+                    } else {
+                        clickHandler = `onclick="startGame(${level.level})"`;
+                        if (level.is_completed) {
+                            className += ' completed';
+                            statusIcon = '⭐';
+                        } else if (level.level === playerProgress[currentCategory].current_level) {
+                            className += ' current';
+                            statusIcon = '▶️';
+                        } else {
+                            statusIcon = '▶️';
+                        }
+                    }
+                    
+                    const levelCard = document.createElement('div');
+                    levelCard.className = className + ' animate-slide-right';
+                    levelCard.style.animationDelay = (index * 0.1) + 's';
+                    
+                    if (clickHandler) {
+                        levelCard.onclick = () => startGame(level.level);
+                    }
+                    
+                    levelCard.innerHTML = `
+                        <div class="level-number">${level.level}</div>
+                        <div class="level-icon" style="font-size: 2em; margin: 10px 0;">${statusIcon}</div>
+                        <div class="level-title">${level.name}</div>
+                        <div class="level-progress">${level.words_count} מילים</div>
+                        ${!level.is_unlocked ? `<div style="font-size: 0.7em; color: #999; margin-top: 5px;">נדרש: ${level.unlock_score} נקודות</div>` : ''}
+                    `;
+                    
+                    container.appendChild(levelCard);
+                    
+                    // הוספת אנימציה למעבר עכבר
+                    if (level.is_unlocked) {
+                        animateLevelCard(levelCard);
+                    }
+                }, index * 100);
+            });
+        }
+
+        async function startGame(level) {
+            currentLevel = level;
+            
+            try {
+                showLoading();
+                const response = await fetch('/api/start_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        category: currentCategory,
+                        level: level
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    gameData = data;
+                    showScreen('gameScreen');
+                    document.getElementById('gameTitle').textContent = 
+                        `${data.level_info.name} - רמה ${level}`;
+                    nextQuestion();
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בהתחלת המשחק', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function nextQuestion() {
+            try {
+                const response = await fetch('/api/next_question');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayQuestion(data);
+                } else {
+                    showMessage(data.error, 'error');
+                    goToLevelSelection();
+                }
+            } catch (error) {
+                showMessage('שגיאה בטעינת שאלה', 'error');
+            }
+        }
+
+        function displayQuestion(questionData) {
+            const question = questionData.question;
+            const answers = questionData.answers;
+            const progress = questionData.game_progress;
+            
+            // עדכון התמונה והמילה העברית
+            document.getElementById('wordImage').src = `/static/images/${question.image}`;
+            document.getElementById('wordImage').alt = question.hebrew;
+            document.getElementById('hebrewWord').textContent = question.hebrew;
+            
+            // עדכון התקדמות
+            const progressPercent = (progress.answered / progress.total) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            document.getElementById('gameProgress').textContent = 
+                `שאלה ${progress.answered + 1} מתוך ${progress.total} | ציון: ${progress.score}`;
+            
+            // יצירת תשובות
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = answers.map(answer => `
+                <div class="answer-card" onclick="submitAnswer('${answer}')">
+                    ${answer}
+                </div>
+            `).join('');
+        }
+
+        async function submitAnswer(answer) {
+            // נטרול כפתורי התשובות
+            const answerCards = document.querySelectorAll('.answer-card');
+            answerCards.forEach(card => {
+                card.style.pointerEvents = 'none';
+            });
+            
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answer: answer })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // הדגשת התשובה הנכונה והשגויה
+                    answerCards.forEach(card => {
+                        if (card.textContent.trim() === data.correct_answer) {
+                            card.classList.add('correct');
+                        } else if (card.textContent.trim() === answer && !data.is_correct) {
+                            card.classList.add('wrong');
+                        }
+                    });
+                    
+                    // המתנה לאנימציה
+                    setTimeout(() => {
+                        if (data.game_finished) {
+                            showGameResults(data);
+                        } else {
+                            nextQuestion();
+                        }
+                    }, 1500);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בשליחת תשובה', 'error');
+            }
+        }
+
+        function showGameResults(resultData) {
+            const progress = resultData.game_progress;
+            const successRate = Math.round((progress.answered > 0 ? 
+                (resultData.game_progress.score / (progress.answered * 5)) * 100 : 0));
+            
+            // בחירת אמוג'י וכותרת לפי הצלחה
+            let emoji = '🎉';
+            let title = 'כל הכבוד!';
+            
+            if (successRate >= 90) {
+                emoji = '🏆';
+                title = 'מושלם!';
+            } else if (successRate >= 70) {
+                emoji = '⭐';
+                title = 'מעולה!';
+            } else if (successRate >= 50) {
+                emoji = '👍';
+                title = 'יפה מאוד!';
+            } else {
+                emoji = '💪';
+                title = 'בפעם הבאה יהיה יותר טוב!';
+            }
+            
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('finalScore').textContent = progress.score;
+            document.getElementById('correctAnswers').textContent = 
+                `${Math.round((progress.score / 5))} מתוך ${progress.answered}`;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+            
+            if (resultData.level_completed) {
+                showMessage('🎉 הרמה הושלמה בהצלחה! עלית לרמה הבאה!');
+            }
+            
+            showScreen('resultScreen');
+        }
+
+        async function exitGame() {
+            if (confirm('האם אתם בטוחים שברצונכם לצאת מהמשחק? ההתקדמות תישמר.')) {
+                try {
+                    await fetch('/api/exit_game', { method: 'POST' });
+                    goToLevelSelection();
+                } catch (error) {
+                    showMessage('שגיאה ביציאה מהמשחק', 'error');
+                }
+            }
+        }
+
+        // פונקציות אנימציה דומות לדואולינגו
+        function createConfetti() {
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'];
+            const container = document.getElementById('resultScreen');
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    container.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, 5000);
+                }, i * 100);
+            }
+        }
+
+        function animateCorrectAnswer(element) {
+            element.classList.add('animate-correct');
+            element.style.background = 'linear-gradient(145deg, #c8e6c9 0%, #4CAF50 100%)';
+            element.style.color = 'white';
+            element.style.fontWeight = 'bold';
+            
+            // ניגון צליל הצלחה (אם זמין)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjiR1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcBjl/1O/amz0IHm278OChYxELR5rg6q1YGAh4x+/ckDbfcK');
+                audio.volume = 0.3;
+                audio.play().catch(() => {}); // התעלמות משגיאות צליל
+            } catch (e) {}
+            
+            // הוספת אפקט כוכבים
+            const star = document.createElement('div');
+            star.innerHTML = '⭐';
+            star.style.position = 'absolute';
+            star.style.top = '50%';
+            star.style.left = '50%';
+            star.style.transform = 'translate(-50%, -50%)';
+            star.style.fontSize = '2em';
+            star.style.zIndex = '10';
+            star.classList.add('animate-star-burst');
+            element.style.position = 'relative';
+            element.appendChild(star);
+            
+            // רטט בטלפון
+            if (navigator.vibrate) {
+                navigator.vibrate([50, 25, 50]);
+            }
+            
+            setTimeout(() => {
+                if (star.parentNode) {
+                    star.parentNode.removeChild(star);
+                }
+            }, 2000);
+        }
+
+        function animateWrongAnswer(element) {
+            element.classList.add('animate-wrong');
+            element.style.background = 'linear-gradient(145deg, #ffcdd2 0%, #f44336 100%)';
+            element.style.color = 'white';
+            element.style.fontWeight = 'bold';
+            
+            // ניגון צליל שגיאה (אם זמין)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnQEAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YVAKAAC4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBAQEBAQEBAQEBAQEBAQEBAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4QEBA');
+                audio.volume = 0.2;
+                audio.play().catch(() => {});
+            } catch (e) {}
+            
+            // רטט חזק יותר לשגיאה
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 100]);
+            }
+        }
+
+        function animateLevelCard(element) {
+            element.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            element.addEventListener('mouseenter', () => {
+                element.style.transform = 'translateY(-8px) scale(1.02)';
+                element.style.boxShadow = '0 20px 40px rgba(0,0,0,0.25)';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                element.style.transform = 'translateY(0) scale(1)';
+                element.style.boxShadow = '0 8px 25px rgba(255, 193, 7, 0.3)';
+            });
+        }
+
+        function animateProgressBar(targetWidth) {
+            const progressBar = document.getElementById('progressBar');
+            let currentWidth = 0;
+            const increment = targetWidth / 20;
+            
+            const animate = () => {
+                if (currentWidth < targetWidth) {
+                    currentWidth += increment;
+                    progressBar.style.width = Math.min(currentWidth, targetWidth) + '%';
+                    requestAnimationFrame(animate);
+                }
+            };
+            
+            animate();
+        }
+
+        // עדכון פונקציית displayQuestion להוסיף אנימציות
+        function displayQuestion(questionData) {
+            const question = questionData.question;
+            const answers = questionData.answers;
+            const progress = questionData.game_progress;
+            
+            // אנימציה לתמונה
+            const image = document.getElementById('wordImage');
+            image.style.opacity = '0';
+            image.style.transform = 'scale(0.8)';
+            image.src = `/static/images/${question.image}`;
+            image.alt = question.hebrew;
+            
+            image.onload = () => {
+                image.style.transition = 'all 0.5s ease-out';
+                image.style.opacity = '1';
+                image.style.transform = 'scale(1)';
+            };
+            
+            // אנימציה למילה העברית
+            const hebrewWord = document.getElementById('hebrewWord');
+            hebrewWord.style.opacity = '0';
+            hebrewWord.style.transform = 'translateY(20px)';
+            hebrewWord.textContent = question.hebrew;
+            
+            setTimeout(() => {
+                hebrewWord.style.transition = 'all 0.4s ease-out';
+                hebrewWord.style.opacity = '1';
+                hebrewWord.style.transform = 'translateY(0)';
+            }, 200);
+            
+            // עדכון התקדמות עם אנימציה
+            const progressPercent = (progress.answered / progress.total) * 100;
+            setTimeout(() => {
+                animateProgressBar(progressPercent);
+            }, 400);
+            
+            document.getElementById('gameProgress').textContent = 
+                `שאלה ${progress.answered + 1} מתוך ${progress.total} | ציון: ${progress.score}`;
+            
+            // יצירת תשובות עם אנימציה
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = '';
+            
+            answers.forEach((answer, index) => {
+                setTimeout(() => {
+                    const answerCard = document.createElement('div');
+                    answerCard.className = 'answer-card animate-slide-right';
+                    answerCard.textContent = answer;
+                    answerCard.style.animationDelay = (index * 0.1) + 's';
+                    answerCard.onclick = () => submitAnswer(answer);
+                    answersGrid.appendChild(answerCard);
+                }, index * 100);
+            });
+        }
+
+        // עדכון פונקציית submitAnswer להוסיף אנימציות
+        async function submitAnswer(answer) {
+            const answerCards = document.querySelectorAll('.answer-card');
+            answerCards.forEach(card => {
+                card.style.pointerEvents = 'none';
+            });
+            
+            try {
+                const response = await fetch('/api/submit_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answer: answer })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // אנימציות לתשובות
+                    answerCards.forEach(card => {
+                        if (card.textContent.trim() === data.correct_answer) {
+                            animateCorrectAnswer(card);
+                        } else if (card.textContent.trim() === answer && !data.is_correct) {
+                            animateWrongAnswer(card);
+                        } else {
+                            card.style.opacity = '0.5';
+                        }
+                    });
+                    
+                    // המתנה לאנימציה
+                    setTimeout(() => {
+                        if (data.game_finished) {
+                            showGameResults(data);
+                        } else {
+                            nextQuestion();
+                        }
+                    }, 1500);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בשליחת תשובה', 'error');
+            }
+        }
+
+        // פונקציות ניווט
+        function goToPlayerSelection() {
+            // איפוס המשתנים
+            currentPlayer = null;
+            currentCategory = null;
+            currentLevel = null;
+            gameData = null;
+            playerProgress = null;
+            
+            showScreen('playerSelection');
+            loadPlayers();
+            document.getElementById('levelsContainer').style.display = 'none';
+        }
+
+        function goToLevelSelection() {
+            if (currentPlayer) {
+                loadPlayerProgress();
+                showScreen('levelSelection');
+                document.getElementById('levelsContainer').style.display = 'none';
+            } else {
+                goToPlayerSelection();
+            }
+        }
+
+        // פונקציות הסברים
+        async function showExplanations() {
+            try {
+                showLoading();
+                const response = await fetch('/api/explanations');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayExplanations(data.explanations);
+                    showScreen('explanationsScreen');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בטעינת הסברים', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayExplanations(explanations) {
+            const container = document.getElementById('explanationsGrid');
+            container.innerHTML = '';
+            
+            explanations.forEach((explanation, index) => {
+                setTimeout(() => {
+                    const card = document.createElement('div');
+                    card.className = 'explanation-card animate-slide-right';
+                    card.style.animationDelay = (index * 0.1) + 's';
+                    card.onclick = () => showExplanationDetail(explanation.id);
+                    
+                    card.innerHTML = `
+                        <h3>${explanation.title}</h3>
+                        <p>${explanation.description}</p>
+                    `;
+                    
+                    container.appendChild(card);
+                }, index * 100);
+            });
+        }
+
+        async function showExplanationDetail(explanationId) {
+            try {
+                showLoading();
+                const response = await fetch(`/api/explanations/${explanationId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayExplanationDetail(data.explanation);
+                    showScreen('explanationDetailScreen');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('שגיאה בטעינת הסבר', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayExplanationDetail(explanation) {
+            document.getElementById('explanationTitle').textContent = explanation.title;
+            document.getElementById('explanationDescription').textContent = explanation.description;
+            document.getElementById('explanationStructure').textContent = explanation.structure;
+            
+            // דוגמאות
+            const examplesContainer = document.getElementById('explanationExamples');
+            examplesContainer.innerHTML = '';
+            explanation.examples.forEach(example => {
+                const div = document.createElement('div');
+                div.className = 'example-item';
+                div.textContent = example;
+                examplesContainer.appendChild(div);
+            });
+            
+            // כללים
+            const rulesContainer = document.getElementById('explanationRules');
+            rulesContainer.innerHTML = '';
+            explanation.rules.forEach(rule => {
+                const div = document.createElement('div');
+                div.className = 'rule-item';
+                div.textContent = rule;
+                rulesContainer.appendChild(div);
+            });
+            
+            // מילות מפתח
+            const keywordsContainer = document.getElementById('explanationKeywords');
+            keywordsContainer.innerHTML = '';
+            explanation.keywords.forEach(keyword => {
+                const span = document.createElement('span');
+                span.className = 'keyword-tag';
+                span.textContent = keyword;
+                keywordsContainer.appendChild(span);
+            });
+        }
+
+        // עדכון פונקציית displayQuestion לטפל גם במשפטים
+        function displayQuestion(questionData) {
+            const question = questionData.question;
+            const answers = questionData.answers;
+            const progress = questionData.game_progress;
+            
+            // בדיקה אם זו שאלת משפט או מילה
+            if (question.type === 'sentence') {
+                // משפט - הסתרת התמונה והצגת הטקסט
+                const image = document.getElementById('wordImage');
+                image.style.display = 'none';
+                
+                const hebrewWord = document.getElementById('hebrewWord');
+                hebrewWord.style.opacity = '0';
+                hebrewWord.style.transform = 'translateY(20px)';
+                hebrewWord.textContent = question.hebrew;
+                hebrewWord.style.fontSize = '2em'; // גודל קטן יותר למשפטים
+                
+                setTimeout(() => {
+                    hebrewWord.style.transition = 'all 0.4s ease-out';
+                    hebrewWord.style.opacity = '1';
+                    hebrewWord.style.transform = 'translateY(0)';
+                }, 200);
+            } else {
+                // מילה - הצגת התמונה כרגיל
+                const image = document.getElementById('wordImage');
+                image.style.display = 'block';
+                image.style.opacity = '0';
+                image.style.transform = 'scale(0.8)';
+                image.src = `/static/images/${question.image}`;
+                image.alt = question.hebrew;
+                
+                image.onload = () => {
+                    image.style.transition = 'all 0.5s ease-out';
+                    image.style.opacity = '1';
+                    image.style.transform = 'scale(1)';
+                };
+                
+                const hebrewWord = document.getElementById('hebrewWord');
+                hebrewWord.style.opacity = '0';
+                hebrewWord.style.transform = 'translateY(20px)';
+                hebrewWord.textContent = question.hebrew;
+                hebrewWord.style.fontSize = '3em'; // גודל רגיל למילים
+                
+                setTimeout(() => {
+                    hebrewWord.style.transition = 'all 0.4s ease-out';
+                    hebrewWord.style.opacity = '1';
+                    hebrewWord.style.transform = 'translateY(0)';
+                }, 200);
+            }
+            
+            // עדכון התקדמות עם אנימציה
+            const progressPercent = (progress.answered / progress.total) * 100;
+            setTimeout(() => {
+                animateProgressBar(progressPercent);
+            }, 400);
+            
+            document.getElementById('gameProgress').textContent = 
+                `שאלה ${progress.answered + 1} מתוך ${progress.total} | ציון: ${progress.score}`;
+            
+            // יצירת תשובות עם אנימציה
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = '';
+            
+            answers.forEach((answer, index) => {
+                setTimeout(() => {
+                    const answerCard = document.createElement('div');
+                    answerCard.className = 'answer-card animate-slide-right';
+                    answerCard.textContent = answer;
+                    answerCard.style.animationDelay = (index * 0.1) + 's';
+                    answerCard.onclick = () => submitAnswer(answer);
+                    answersGrid.appendChild(answerCard);
+                }, index * 100);
+            });
+        }
+
+        // פונקציות תרגום
+        function showTranslatorHebEng() {
+            showScreen('translatorHebEngScreen');
+        }
+
+        function showTranslatorEngHeb() {
+            showScreen('translatorEngHebScreen');
+        }
+
+        // מילון תרגום מורחב
+        const translationDictionary = {
+            // ביטויים בסיסיים
+            'שלום': 'hello',
+            'תודה': 'thank you',
+            'בבקשה': 'please',
+            'סליחה': 'excuse me',
+            'כן': 'yes',
+            'לא': 'no',
+            'טוב': 'good',
+            'רע': 'bad',
+            'גדול': 'big',
+            'קטן': 'small',
+            
+            // מילות יסוד
+            'מים': 'water',
+            'אוכל': 'food',
+            'בית': 'house',
+            'משפחה': 'family',
+            'אהבה': 'love',
+            'חבר': 'friend',
+            'ספר': 'book',
+            'לימוד': 'study',
+            'עבודה': 'work',
+            'זמן': 'time',
+            'יום': 'day',
+            'לילה': 'night',
+            'בוקר': 'morning',
+            'ערב': 'evening',
+            'כסף': 'money',
+            'דלת': 'door',
+            'חלון': 'window',
+            'שולחן': 'table',
+            'כיסא': 'chair',
+            'מיטה': 'bed',
+            'אופניים': 'bicycle',
+            'אופנים': 'bicycle',
+            'רכב': 'car',
+            'מכונית': 'car',
+            'בית ספר': 'school',
+            'מורה': 'teacher',
+            'תלמיד': 'student',
+            'שיעור': 'lesson',
+            'בחינה': 'exam',
+            'חופש': 'vacation',
+            
+            // חיות מהמשחק
+            'כלב': 'dog',
+            'חתול': 'cat',
+            'ציפור': 'bird',
+            'דג': 'fish',
+            'פרה': 'cow',
+            'סוס': 'horse',
+            'עכבר': 'mouse',
+            'אריה': 'lion',
+            'פיל': 'elephant',
+            'קוף': 'monkey',
+            'דוב': 'bear',
+            'זאב': 'wolf',
+            
+            // צבעים
+            'אדום': 'red',
+            'כחול': 'blue',
+            'צהוב': 'yellow',
+            'ירוק': 'green',
+            'סגול': 'purple',
+            'כתום': 'orange',
+            'ורוד': 'pink',
+            'שחור': 'black',
+            'לבן': 'white',
+            'חום': 'brown',
+            'אפור': 'gray',
+            'זהב': 'gold',
+            
+            // אוכל
+            'תפוח': 'apple',
+            'בננה': 'banana',
+            'לחם': 'bread',
+            'חלב': 'milk',
+            'עוגה': 'cake',
+            'פיצה': 'pizza',
+            'גלידה': 'ice cream',
+            'ביצה': 'egg',
+            'גבינה': 'cheese',
+            'בשר': 'meat',
+            
+            // משפחה
+            'אבא': 'father',
+            'אמא': 'mother',
+            'אח': 'brother',
+            'אחות': 'sister',
+            'סבא': 'grandfather',
+            'סבתא': 'grandmother',
+            'בן דוד': 'cousin',
+            'תינוק': 'baby',
+            'דוד': 'uncle',
+            'דודה': 'aunt',
+            'בן': 'son',
+            'בת': 'daughter',
+            
+            // פעלים
+            'ללכת': 'go',
+            'לבוא': 'come',
+            'לאכול': 'eat',
+            'לשתות': 'drink',
+            'לישון': 'sleep',
+            'לרוץ': 'run',
+            'לשחק': 'play',
+            'לקרוא': 'read',
+            'לכתוב': 'write',
+            'לראות': 'see',
+            'לשמוע': 'hear',
+            'לדבר': 'speak',
+            'ללמוד': 'learn',
+            'ללמד': 'teach',
+            'לעבוד': 'work',
+            'לנסוע': 'travel',
+            'לשיר': 'sing',
+            'לרקוד': 'dance',
+            
+            // מספרים
+            'אחד': 'one',
+            'שניים': 'two',
+            'שלושה': 'three',
+            'ארבעה': 'four',
+            'חמישה': 'five',
+            'שישה': 'six',
+            'שבעה': 'seven',
+            'שמונה': 'eight',
+            'תשעה': 'nine',
+            'עשרה': 'ten',
+            
+            // זמנים
+            'היום': 'today',
+            'אתמול': 'yesterday',
+            'מחר': 'tomorrow',
+            'עכשיו': 'now',
+            'אז': 'then',
+            'שעה': 'hour',
+            'דקה': 'minute',
+            'שנייה': 'second',
+            'שבוע': 'week',
+            'חודש': 'month',
+            'שנה': 'year'
+        };
+
+        // פונקציית חיפוש תרגום באינטרנט עם מקורות מרובים
+        async function searchTranslationOnline(word, fromLang = 'he', toLang = 'en') {
+            console.log(`מחפש תרגום עבור: "${word}" מ-${fromLang} ל-${toLang}`);
+            
+            // רשימת מקורות תרגום
+            const translationSources = [
+                {
+                    name: 'MyMemory',
+                    url: `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${fromLang}|${toLang}`,
+                    parse: (data) => data.responseStatus === 200 && data.responseData ? data.responseData.translatedText : null
+                },
+                {
+                    name: 'GoogleTranslate',
+                    url: `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${fromLang}&tl=${toLang}&dt=t&q=${encodeURIComponent(word)}`,
+                    parse: (data) => Array.isArray(data) && data[0] && data[0][0] ? data[0][0][0] : null
+                }
+            ];
+            
+            // ניסיון תרגום ממקורות שונים
+            for (const source of translationSources) {
+                try {
+                    console.log(`מנסה תרגום מ-${source.name}...`);
+                    const response = await fetch(source.url);
+                    const data = await response.json();
+                    const translation = source.parse(data);
+                    
+                    if (translation) {
+                        let cleanTranslation = translation.toLowerCase().trim();
+                        
+                        // ניקוי התרגום
+                        cleanTranslation = cleanTranslation.replace(/[.,!?;:"'()]/g, '').trim();
+                        
+                        // בדיקה שהתרגום לא זהה למילה המקורית ולא ריק
+                        if (cleanTranslation !== word.toLowerCase() && cleanTranslation.length > 0) {
+                            console.log(`תרגום נמצא ב-${source.name}: "${cleanTranslation}"`);
+                            return cleanTranslation;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`שגיאה ב-${source.name}:`, error);
+                    continue;
+                }
+            }
+            
+            
+            // תיקוני תרגום ידניים לביטויים בעייתיים
+            const manualCorrections = {
+                'he-en': {
+                    'ראש ממשלה': 'prime minister',
+                    'ראש הממשלה': 'prime minister',
+                    'ראש הממשלה הישראלי': 'israeli prime minister',
+                    'ראש הממשלה של ישראל': 'prime minister of israel',
+                    'ראש עיר': 'mayor',
+                    'ראש העיר': 'mayor',
+                    'ראש העיריה': 'mayor',
+                    'ראשי ערים': 'mayors',
+                    'head government': 'prime minister', // תיקון לתרגום שגוי
+                    'head of government': 'prime minister',
+                    'government head': 'prime minister',
+                    'head city': 'mayor', // תיקון לתרגום שגוי
+                    'head of city': 'mayor',
+                    'city head': 'mayor'
+                },
+                'en-he': {
+                    'prime minister': 'ראש ממשלה',
+                    'israeli prime minister': 'ראש הממשלה הישראלי',
+                    'prime minister of israel': 'ראש הממשלה של ישראל',
+                    'mayor': 'ראש עיר',
+                    'mayors': 'ראשי ערים'
+                }
+            };
+            
+            const correctionKey = `${fromLang}-${toLang}`;
+            if (manualCorrections[correctionKey] && manualCorrections[correctionKey][word.toLowerCase()]) {
+                console.log(`תיקון ידני נמצא: ${manualCorrections[correctionKey][word.toLowerCase()]}`);
+                return manualCorrections[correctionKey][word.toLowerCase()];
+            }
+            
+            console.log('לא נמצא תרגום מתאים באף אחד מהמקורות');
+            return null;
+        }
+        
+        // פונקציית תרגום משופרת עם Morfix
+        async function searchMorfixTranslation(word, fromLang = 'he', toLang = 'en') {
+            try {
+                // ניסיון גישה ל-Morfix API
+                const morfixResponse = await fetch(`https://services.morfix.com/translationhebeng/getTranslation`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: word,
+                        sourceLang: fromLang,
+                        targetLang: toLang
+                    })
+                });
+                
+                if (morfixResponse.ok) {
+                    const morfixData = await morfixResponse.json();
+                    if (morfixData && morfixData.translation) {
+                        return morfixData.translation.toLowerCase().trim();
+                    }
+                }
+            } catch (error) {
+                console.log('שגיאה בגישה ל-Morfix:', error);
+            }
+            return null;
+        }
+
+        // פונקציית הוספת תרגום חדש למילון
+        function addToTranslationDictionary(hebrew, english) {
+            translationDictionary[hebrew.toLowerCase()] = english.toLowerCase();
+            reverseTranslationDictionary[english.toLowerCase()] = hebrew;
+            
+            // שמירה ב-localStorage לשימוש עתידי
+            try {
+                const savedTranslations = JSON.parse(localStorage.getItem('customTranslations') || '{}');
+                savedTranslations[hebrew.toLowerCase()] = english.toLowerCase();
+                localStorage.setItem('customTranslations', JSON.stringify(savedTranslations));
+            } catch (e) {
+                console.log('שגיאה בשמירת תרגום:', e);
+            }
+        }
+
+        // פונקציה לתרגום ביטויים שלמים לפני תרגום מילה אחר מילה
+        function translateCompleteExpressions(text, dictionary) {
+            let result = text;
+            
+            // רשימת ביטויים שלמים לחיפוש (מהארוך לקצר כדי לטפל קודם בביטויים הארוכים)
+            const expressions = Object.keys(dictionary).sort((a, b) => b.length - a.length);
+            
+            for (const expr of expressions) {
+                if (result.includes(expr)) {
+                    console.log(`נמצא ביטוי שלם: "${expr}" -> "${dictionary[expr]}"`);
+                    // החלפה ישירה של הביטוי השלם
+                    result = result.replace(new RegExp(expr, 'gi'), dictionary[expr]);
+                }
+            }
+            
+            return result;
+        }
+
+        // טעינת תרגומים שמורים מ-localStorage
+        function loadSavedTranslations() {
+            try {
+                const savedTranslations = JSON.parse(localStorage.getItem('customTranslations') || '{}');
+                Object.entries(savedTranslations).forEach(([hebrew, english]) => {
+                    translationDictionary[hebrew] = english;
+                    reverseTranslationDictionary[english] = hebrew;
+                });
+            } catch (e) {
+                console.log('שגיאה בטעינת תרגומים שמורים:', e);
+            }
+        }
+
+        async function translateHebToEng() {
+            const input = document.getElementById('hebInput').value.trim();
+            const output = document.getElementById('engOutput');
+            
+            if (!input) {
+                output.textContent = 'אנא הזינו טקסט לתרגום';
+                return;
+            }
+            
+            // הצגת הודעת טעינה
+            output.textContent = 'מתרגם... 🔄';
+            output.style.color = '#2196F3';
+            
+            // ניקוי והכנת הטקסט לתרגום
+            let cleanInput = input.toLowerCase();
+            
+            // קודם נחפש ביטויים שלמים במילון
+            let translatedText = translateCompleteExpressions(cleanInput, translationDictionary);
+            
+            // אם כל הטקסט תורגם - נציג את התוצאה
+            if (translatedText !== cleanInput) {
+                output.textContent = translatedText;
+                output.style.color = '#4CAF50';
+                
+                // אנימציה
+                output.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    output.style.transition = 'transform 0.3s ease';
+                    output.style.transform = 'scale(1)';
+                }, 100);
+                
+                return; // סיים - כל הטקסט תורגם
+            }
+            
+            // אם לא - נתרגם מילה אחר מילה
+            cleanInput = cleanInput.replace(/[.,!?;:"'()]/g, ' ');
+            const words = cleanInput.split(/\s+/).filter(word => word.length > 0);
+            const translatedWords = [];
+            const unknownWords = [];
+            
+            for (const word of words) {
+                let translated = null;
+                
+                // חיפוש ישיר במילון
+                if (translationDictionary[word]) {
+                    translated = translationDictionary[word];
+                } else {
+                    // חיפוש מילים דומות או חלקיות
+                    for (const [hebrewWord, englishWord] of Object.entries(translationDictionary)) {
+                        if (hebrewWord.includes(word) || word.includes(hebrewWord)) {
+                            translated = englishWord;
+                            break;
+                        }
+                    }
+                    
+                    // אם לא נמצא תרגום - נסה בלי אותיות סיום
+                    if (!translated && word.length > 2) {
+                        const baseWord = word.substring(0, word.length - 1);
+                        if (translationDictionary[baseWord]) {
+                            translated = translationDictionary[baseWord];
+                        }
+                    }
+                }
+                
+                if (translated) {
+                    translatedWords.push(translated);
+                } else {
+                    // אם לא נמצא במילון - נחפש באינטרנט
+                    unknownWords.push(word);
+                    translatedWords.push(`[מחפש...]`);
+                }
+            }
+            
+            // הצגת תוצאה ראשונית
+            let result = translatedWords.join(' ');
+            
+            // שחזור ביטויים מתורגמים
+            result = restoreTranslatedExpressions(result);
+            
+            output.textContent = result;
+            
+            // חיפוש באינטרנט למילים לא ידועות
+            if (unknownWords.length > 0) {
+                for (let i = 0; i < unknownWords.length; i++) {
+                    const word = unknownWords[i];
+                    try {
+                        // קודם נבדק אם זה ביטוי שמצריך תיקון מיוחד
+                        let onlineTranslation = null;
+                        
+                        // תיקונים מיוחדים לביטויים ידועים
+                        if (word === 'ראש ממשלה' || word === 'ראש הממשלה') {
+                            onlineTranslation = 'prime minister';
+                            console.log('תיקון מיוחד: ראש ממשלה = prime minister');
+                        } else if (word === 'ראש עיר' || word === 'ראש העיר' || word === 'ראש העיריה') {
+                            onlineTranslation = 'mayor';
+                            console.log('תיקון מיוחד: ראש עיר = mayor');
+                        } else {
+                            // חיפוש רגיל באינטרנט
+                            onlineTranslation = await searchTranslationOnline(word, 'he', 'en');
+                            
+                            // אם התוצאה היא תרגום שגוי - נתקן אותה
+                            if (onlineTranslation === 'head government' || onlineTranslation === 'government head') {
+                                onlineTranslation = 'prime minister';
+                                console.log('תיקון תרגום שגוי: head government -> prime minister');
+                            } else if (onlineTranslation === 'head city' || onlineTranslation === 'city head' || onlineTranslation === 'head of city') {
+                                onlineTranslation = 'mayor';
+                                console.log('תיקון תרגום שגוי: head city -> mayor');
+                            }
+                        }
+                        
+                        if (onlineTranslation) {
+                            // הוספת התרגום למילון
+                            addToTranslationDictionary(word, onlineTranslation);
+                            
+                            // עדכון התוצאה
+                            result = result.replace('[מחפש...]', onlineTranslation);
+                            output.textContent = result;
+                            
+                            // הודעת הצלחה
+                            showMessage(`נמצא תרגום חדש: ${word} = ${onlineTranslation}`, 'success');
+                        } else {
+                            // אם לא נמצא תרגום באינטרנט
+                            result = result.replace('[מחפש...]', `[${word}]`);
+                            output.textContent = result;
+                        }
+                    } catch (error) {
+                        result = result.replace('[מחפש...]', `[${word}]`);
+                        output.textContent = result;
+                    }
+                }
+            }
+            
+            // צביעת התוצאה הסופית
+            if (result.includes('[') && !result.includes('[מחפש...]')) {
+                output.style.color = '#ff6b6b'; // אדום לתרגום חלקי
+                setTimeout(() => {
+                    showMessage('חלק מהמילים לא נמצאו גם באינטרנט. המילים שב[סוגריים] לא תורגמו.', 'info');
+                }, 500);
+            } else if (!result.includes('[')) {
+                output.style.color = '#4CAF50'; // ירוק לתרגום מלא
+            } else {
+                output.style.color = '#2196F3'; // כחול בזמן חיפוש
+            }
+            
+            // אנימציה
+            output.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                output.style.transition = 'transform 0.3s ease';
+                output.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        async function translateEngToHeb() {
+            const input = document.getElementById('engInput').value.trim();
+            const output = document.getElementById('hebOutput');
+            
+            if (!input) {
+                output.textContent = 'Please enter text to translate';
+                return;
+            }
+            
+            // הצגת הודעת טעינה
+            output.textContent = 'Translating... 🔄';
+            output.style.color = '#2196F3';
+            
+            // ניקוי והכנת הטקסט לתרגום
+            let cleanInput = input.toLowerCase();
+            
+            // קודם נחפש ביטויים שלמים במילון הפוך
+            let translatedText = translateCompleteExpressions(cleanInput, reverseTranslationDictionary);
+            
+            // אם כל הטקסט תורגם - נציג את התוצאה
+            if (translatedText !== cleanInput) {
+                output.textContent = translatedText;
+                output.classList.add('hebrew');
+                output.style.color = '#4CAF50';
+                
+                // אנימציה
+                output.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    output.style.transition = 'transform 0.3s ease';
+                    output.style.transform = 'scale(1)';
+                }, 100);
+                
+                return; // סיים - כל הטקסט תורגם
+            }
+            
+            // אם לא - נתרגם מילה אחר מילה
+            cleanInput = cleanInput.replace(/[.,!?;:"'()]/g, ' ');
+            const words = cleanInput.split(/\s+/).filter(word => word.length > 0);
+            const translatedWords = [];
+            const unknownWords = [];
+            
+            for (const word of words) {
+                let translated = null;
+                
+                // חיפוש ישיר במילון הפוך
+                if (reverseTranslationDictionary[word]) {
+                    translated = reverseTranslationDictionary[word];
+                } else {
+                    // חיפוש מילים דומות
+                    for (const [englishWord, hebrewWord] of Object.entries(reverseTranslationDictionary)) {
+                        if (englishWord.includes(word) || word.includes(englishWord)) {
+                            translated = hebrewWord;
+                            break;
+                        }
+                    }
+                    
+                    // נסה בלי s בסוף (רבים באנגלית)
+                    if (!translated && word.endsWith('s') && word.length > 2) {
+                        const singular = word.slice(0, -1);
+                        if (reverseTranslationDictionary[singular]) {
+                            translated = reverseTranslationDictionary[singular];
+                        }
+                    }
+                    
+                    // נסה בלי ed בסוף (עבר באנגלית)
+                    if (!translated && word.endsWith('ed') && word.length > 3) {
+                        const base = word.slice(0, -2);
+                        if (reverseTranslationDictionary[base]) {
+                            translated = reverseTranslationDictionary[base];
+                        }
+                    }
+                    
+                    // נסה בלי ing בסוף (הווה מתמשך)
+                    if (!translated && word.endsWith('ing') && word.length > 4) {
+                        const base = word.slice(0, -3);
+                        if (reverseTranslationDictionary[base]) {
+                            translated = reverseTranslationDictionary[base];
+                        }
+                    }
+                }
+                
+                if (translated) {
+                    translatedWords.push(translated);
+                } else {
+                    // אם לא נמצא במילון - נחפש באינטרנט
+                    unknownWords.push(word);
+                    translatedWords.push(`[מחפש...]`);
+                }
+            }
+            
+            // הצגת תוצאה ראשונית
+            let result = translatedWords.join(' ');
+            
+            // שחזור ביטויים מתורגמים
+            result = restoreTranslatedExpressions(result);
+            
+            output.textContent = result;
+            output.classList.add('hebrew');
+            
+            // חיפוש באינטרנט למילים לא ידועות
+            if (unknownWords.length > 0) {
+                for (let i = 0; i < unknownWords.length; i++) {
+                    const word = unknownWords[i];
+                    try {
+                        // תיקונים מיוחדים לביטויים ידועים מאנגלית לעברית
+                        let onlineTranslation = null;
+                        
+                        if (word === 'prime minister' || word === 'prime-minister') {
+                            onlineTranslation = 'ראש ממשלה';
+                            console.log('תיקון מיוחד: prime minister = ראש ממשלה');
+                        } else if (word === 'mayor') {
+                            onlineTranslation = 'ראש עיר';
+                            console.log('תיקון מיוחד: mayor = ראש עיר');
+                        } else if (word === 'president') {
+                            onlineTranslation = 'נשיא';
+                        } else if (word === 'minister') {
+                            onlineTranslation = 'שר';
+                        } else if (word === 'government') {
+                            onlineTranslation = 'ממשלה';
+                        } else {
+                            // חיפוש רגיל באינטרנט
+                            onlineTranslation = await searchTranslationOnline(word, 'en', 'he');
+                        }
+                        
+                        if (onlineTranslation) {
+                            // הוספת התרגום למילון
+                            addToTranslationDictionary(onlineTranslation, word);
+                            
+                            // עדכון התוצאה
+                            result = result.replace('[מחפש...]', onlineTranslation);
+                            output.textContent = result;
+                            
+                            // הודעת הצלחה
+                            showMessage(`Found new translation: ${word} = ${onlineTranslation}`, 'success');
+                        } else {
+                            // אם לא נמצא תרגום באינטרנט
+                            result = result.replace('[מחפש...]', `[${word}]`);
+                            output.textContent = result;
+                        }
+                    } catch (error) {
+                        result = result.replace('[מחפש...]', `[${word}]`);
+                        output.textContent = result;
+                    }
+                }
+            }
+            
+            // צביעת התוצאה הסופית
+            if (result.includes('[') && !result.includes('[מחפש...]')) {
+                output.style.color = '#ff6b6b'; // אדום לתרגום חלקי
+                setTimeout(() => {
+                    showMessage('Some words were not found even online. Words in [brackets] were not translated.', 'info');
+                }, 500);
+            } else if (!result.includes('[')) {
+                output.style.color = '#4CAF50'; // ירוק לתרגום מלא
+            } else {
+                output.style.color = '#2196F3'; // כחול בזמן חיפוש
+            }
+            
+            // אנימציה
+            output.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                output.style.transition = 'transform 0.3s ease';
+                output.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        function quickTranslate(hebrew, english) {
+            document.getElementById('hebInput').value = hebrew;
+            document.getElementById('engOutput').textContent = english;
+            document.getElementById('engOutput').style.color = '#4CAF50';
+            document.getElementById('engOutput').style.fontWeight = 'bold';
+        }
+
+        function quickTranslateReverse(english, hebrew) {
+            document.getElementById('engInput').value = english;
+            document.getElementById('hebOutput').textContent = hebrew;
+            document.getElementById('hebOutput').style.color = '#4CAF50';
+            document.getElementById('hebOutput').style.fontWeight = 'bold';
+            document.getElementById('hebOutput').classList.add('hebrew');
+        }
+
+        // Event listeners
+        document.getElementById('newPlayerName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createNewPlayer();
+            }
+        });
+
+        // Event listeners לתרגום
+        document.addEventListener('DOMContentLoaded', function() {
+            // טעינת תרגומים שמורים וטעינת שחקנים
+            loadSavedTranslations();
+            loadPlayers();
+            
+            // תוספת event listeners רק אחרי שהדף נטען
+            setTimeout(() => {
+                const hebInput = document.getElementById('hebInput');
+                const engInput = document.getElementById('engInput');
+                
+                if (hebInput) {
+                    hebInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            translateHebToEng();
+                        }
+                    });
+                }
+                
+                if (engInput) {
+                    engInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            translateEngToHeb();
+                        }
+                    });
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

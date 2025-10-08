@@ -1,0 +1,43 @@
+{
+  "project_info": {
+    "name": "English Learning Game for Kids",
+    "version": "2.0",
+    "description": "משחק לימוד אנגלית אינטראקטיבי עם מערכת תרגום",
+    "author": "Family Project",
+    "kid_friendly": true
+  },
+  "development": {
+    "debug_mode": true,
+    "auto_reload": true,
+    "show_hints": true,
+    "easy_setup": true
+  },
+  "features": {
+    "categories": 8,
+    "levels_per_category": 10,
+    "translation_system": true,
+    "progress_tracking": true,
+    "animations": true,
+    "multiple_players": true
+  },
+  "customization": {
+    "colors": {
+      "primary": "#4CAF50",
+      "secondary": "#2196F3",
+      "success": "#4CAF50",
+      "error": "#f44336",
+      "warning": "#ff9800"
+    },
+    "sounds": {
+      "enabled": false,
+      "volume": 0.5,
+      "effects": ["success", "wrong", "click"]
+    }
+  },
+  "kid_settings": {
+    "simple_interface": true,
+    "large_buttons": true,
+    "clear_instructions": true,
+    "progress_visualization": true
+  }
+}
