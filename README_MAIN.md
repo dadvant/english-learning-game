@@ -4,16 +4,23 @@
 
 זהו פרויקט מיוחד שנוצר עבור עידן וחבריו ללמידת אנגלית ופיתוח תוכנה באמצעות AI. הפרויקט מאפשר לילדים ללמוד תכנות תוך כדי יצירה ושיפור של משחק לימוד אנגלית.
 
-## 🚀 התחלה מהירה - 3 אפשרויות לבחירה
+## 🚀 התחלה מהירה - 4 אפשרויות לבחירה
 
-### אפשרות 1: 🌐 באינטרנט (הכי קל! מומלץ לרוב)
-**עובד בכל מקום בלי להתקין כלום**
+### אפשרות 1: 🌐 באינטרנט בחינם (הכי קל! מומלץ)
+**עובד בכל מקום בלי להתקין כלום - לגמרי חינם!**
+- קראו: `RENDER_DEPLOY_GUIDE.md`
+- 10 דקות להעלאה ל-Render (חינם)
+- לינק קבוע שתמיד עובד
+- ⚠️ השרת נכבה אחרי 15 דקות חוסר פעילות
+
+### אפשרות 2: 🌐 באינטרנט עם עריכה (קל)
+**עובד בכל מקום עם אפשרות עריכה**
 - קראו: `PARENTS_REPLIT_GUIDE.md`
 - 10 דקות להעלאה ל-Replit
-- לינק קבוע שתמיד עובד
-- הילדים יכולים לערוך באתר
+- לינק קבוע + עריכה באתר
+- ⚠️ מגבלות בחינם, אפשר לשלם אם צריך
 
-### אפשרות 2: 💻 במחשב עם AI (לפיתוח מתקדם)
+### אפשרות 3: 💻 במחשב עם AI (לפיתוח מתקדם)
 **התקנה מקומית עם כל הכלים**
 ```powershell
 # ב-Windows PowerShell (כמנהל):
@@ -21,7 +28,7 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 .\setup_dev_environment.ps1
 ```
 
-### אפשרות 3: 📥 הורדה והרצה מקומית (בסיסית)
+### אפשרות 4: 📥 הורדה והרצה מקומית (בסיסית)
 **הורידו ופתחו ישירות**
 - הורידו מ-GitHub
 - הריצו `python EnglishGame.py`
